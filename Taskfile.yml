@@ -1,0 +1,27 @@
+version: '3'
+
+env:
+  PORT: 8080
+  DB_URI: postgres://root:supersecret@localhost:5432/poc?sslmode=disable
+
+tasks:
+  run:
+    desc: run database
+    cmds:
+      - docker-compose up -d
+  migrate-up:
+    desc: run migrations on database
+    cmds:
+      - migrate -database ${DB_URI} -path db/migrations -verbose up
+  migrate-down:
+    desc: remove migrations on database
+    cmds:
+      - migrate -database ${DB_URI} -path db/migrations -verbose down
+  create-table:
+    desc: create a new table to be available on migration-up
+    cmds:
+      - migrate create -ext sql -dir db/migrations -seq {{.CLI_ARGS}}
+  force:
+    desc: reset migrations state to version specified
+    cmds:
+      - migrate -database ${DB_URI} -path db/migrations force {{.CLI_ARGS}}
