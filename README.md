@@ -2,6 +2,8 @@
 
 Esse repositório tem a finalidade de definir os padrões utilizados para desenvolver microsserviços em Go na Pag.aí
 
+### Dependencias do projeto
+ - [Taskfile](https://taskfile.dev/)
 
 GIT FLOW
 ```mermaid
