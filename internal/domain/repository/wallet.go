@@ -8,7 +8,7 @@ import (
 )
 
 type IWalletRepository interface {
-	Get(ctx context.Context, owner string) (int64, error)
+	Get(ctx context.Context, owner string) (entities.Wallet, error)
 	Update(ctx context.Context, wallet entities.Wallet) error
 	Create(ctx context.Context, wallet entities.Wallet) error
 	Delete(ctx context.Context, owner string) error
@@ -22,10 +22,10 @@ type wallet struct {
 	pool database.DBPool
 }
 
-func (w *wallet) Get(ctx context.Context, owner string) (int64, error) {
+func (w *wallet) Get(ctx context.Context, owner string) (entities.Wallet, error) {
 	sess, err := w.pool.Acquire()
 	if err != nil {
-		return 0, ErrInternal
+		return entities.Wallet{}, ErrInternal
 	}
 	defer w.pool.Release(sess)
 
@@ -34,7 +34,7 @@ func (w *wallet) Get(ctx context.Context, owner string) (int64, error) {
 		From("wallet").
 		Where("owner = ?", owner).
 		LoadContext(ctx, &res)
-	return res.Balance, err
+	return res, err
 }
 
 func (w *wallet) Update(ctx context.Context, wallet entities.Wallet) error {
