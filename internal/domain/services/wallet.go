@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+
 	"github.com/gocraft/dbr/v2"
 	"github.com/raphaelteixeira-pagai/poc-ms/internal/domain/entities"
 	"github.com/raphaelteixeira-pagai/poc-ms/internal/domain/repository"
@@ -83,7 +84,7 @@ func (w *wallet) Create(ctx context.Context, wallet entities.Wallet) error {
 		return errors.New("wallet already exists")
 	}
 
-	if err := w.repo.Create(ctx, wallet); err != nil {
+	if err = w.repo.Create(ctx, wallet); err != nil {
 		return errors.New("internal error cannot create new wallet")
 	}
 
@@ -103,7 +104,7 @@ func (w *wallet) Delete(ctx context.Context, owner string) error {
 		return err
 	}
 
-	if err := w.repo.Delete(ctx, owner); err != nil {
+	if err = w.repo.Delete(ctx, owner); err != nil {
 		return errors.New("internal error cannot create new wallet")
 	}
 
