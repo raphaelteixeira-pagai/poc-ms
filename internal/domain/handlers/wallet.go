@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golangsugar/chatty"
+	"github.com/raphaelteixeira-pagai/poc-ms/internal/domain/entities"
 	"github.com/raphaelteixeira-pagai/poc-ms/internal/domain/services"
-	"net/http"
 )
 
 type wallethandlers struct {
@@ -41,17 +43,64 @@ func (w *wallethandlers) FetchWallet(c *gin.Context) {
 }
 
 func (w *wallethandlers) CreateWallet(c *gin.Context) {
+	body := entities.Wallet{}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		chatty.Error("internal error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request", "message": "invalid request"})
+		return
+	}
 
+	err := w.srv.Create(c, body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, "Wallet Created")
 }
 
 func (w *wallethandlers) DepositWallet(c *gin.Context) {
+	body := entities.Wallet{}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		chatty.Error("internal error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request", "message": "invalid request"})
+		return
+	}
 
+	err := w.srv.Deposit(c, body.Balance, body.Owner)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, "Wallet Deposited")
 }
 
 func (w *wallethandlers) WithdrawWallet(c *gin.Context) {
+	body := entities.Wallet{}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		chatty.Error("internal error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request", "message": "invalid request"})
+		return
+	}
 
+	err := w.srv.Withdraw(c, body.Balance, body.Owner)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, "Wallet Withdrawn")
 }
 
 func (w *wallethandlers) DeleteWallet(c *gin.Context) {
+	owner := c.Param("owner")
 
+	err := w.srv.Delete(c, owner)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, "Wallet Deleted")
 }
