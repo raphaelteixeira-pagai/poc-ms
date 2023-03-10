@@ -5,6 +5,7 @@ Esse repositório tem a finalidade de definir os padrões utilizados para desenv
 ### Dependencias do projeto
  - [Taskfile](https://taskfile.dev/)
  - [Go-migrate](https://github.com/golang-migrate/migrate)
+ - [gomock](https://github.com/golang/mock)
 
 GIT FLOW
 ```mermaid
