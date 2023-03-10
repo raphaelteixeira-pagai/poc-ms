@@ -30,11 +30,11 @@ func (w *wallet) Get(ctx context.Context, owner string) (entities.Wallet, error)
 	defer w.pool.Release(sess)
 
 	var res entities.Wallet
-	_, err = sess.Select("balance").
+	errc := sess.Select("balance").
 		From("wallet").
 		Where("owner = ?", owner).
-		LoadContext(ctx, &res)
-	return res, err
+		LoadOneContext(ctx, &res)
+	return res, errc
 }
 
 func (w *wallet) Update(ctx context.Context, wallet entities.Wallet) error {

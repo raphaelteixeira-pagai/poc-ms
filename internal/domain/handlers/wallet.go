@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/raphaelteixeira-pagai/poc-ms/cmd/httphdl"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,7 @@ func RegisterWalletRoutes(srv services.IWalletService, router *gin.RouterGroup) 
 	hdl := &wallethandlers{srv: srv}
 	walletGroup := router.Group("wallet")
 	walletGroup.
-		GET("/:owner", hdl.FetchWallet).
+		GET("/:owner", httphdl.MetricMiddleware("wallet-get", "count"), hdl.FetchWallet).
 		POST("/", hdl.CreateWallet).
 		PUT("/withdraw/:owner", hdl.WithdrawWallet).
 		PUT("/deposit/:owner", hdl.DepositWallet).

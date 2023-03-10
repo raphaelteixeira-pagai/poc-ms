@@ -21,6 +21,10 @@ type wallet struct {
 	repo repository.IWalletRepository
 }
 
+var (
+	ErrAlreadyExists = errors.New("wallet already exists")
+)
+
 func (w *wallet) Fetch(ctx context.Context, owner string) (entities.Wallet, error) {
 	walt, err := w.repo.Get(ctx, owner)
 	if err != nil && !errors.Is(err, dbr.ErrNotFound) {
@@ -75,13 +79,17 @@ func (w *wallet) Create(ctx context.Context, wallet entities.Wallet) error {
 		return errors.New("owner should not be empty")
 	}
 
+	if wallet.Balance < 0 {
+		return errors.New("balance should not be negative")
+	}
+
 	walt, err := w.repo.Get(ctx, wallet.Owner)
 	if err != nil && !errors.Is(err, dbr.ErrNotFound) {
 		return err
 	}
 
 	if walt.ID != 0 {
-		return errors.New("wallet already exists")
+		return ErrAlreadyExists
 	}
 
 	if err = w.repo.Create(ctx, wallet); err != nil {
